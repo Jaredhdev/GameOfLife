@@ -2,6 +2,7 @@ import random
 import numpy as np
 import os
 import time
+import curses
 
 
 class Board:
@@ -24,17 +25,20 @@ class Board:
     def get_board(self):
         return self.board
 
-    def render(self):
-        print("-" * (self.width + 2))
+    def render(self, stdscr):
+        stdscr.clear()
+        stdscr.addstr("-" * (self.width + 2) + "\n")
         for i in range(self.height):
-            print("|", end="")
+            print("|")
             for j in range(self.width):
                 if self.board[i][j] == 1:
-                    print("\u2588", end="")
+                    stdscr.addstr("\u2588")
                 else:
-                    print(" ", end="")
-            print("|")
-        print("-" * (self.width + 2))
+                    stdscr.addstr(" ")
+            stdscr.addstr("|\n")
+        stdscr.addstr("-" * (self.width + 2))
+        stdscr.refresh()
+
 
     def check_pos(self, y, x):
         if 0 <= x < self.width and 0 <= y < self.height:
@@ -73,10 +77,13 @@ class Board:
             lines = [list(map(int, line.strip())) for line in file]
         return np.array(lines)
 
-    def run(self):
+    def run(self, stdscr):
+        stdscr.timeout(100)
         while True:
-            os.system('cls' if os.name == 'nt' else 'clear')
-            self.render()
-            time.sleep(0.05)
+            self.render(stdscr)
             self.next_step()
+
+            key = stdscr.getch()
+            if key == ord('q'):
+                break
 

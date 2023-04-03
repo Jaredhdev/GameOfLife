@@ -1,5 +1,6 @@
 import getopt
 import sys
+import curses
 
 from board import Board
 
@@ -32,7 +33,7 @@ def main(argv):
     if not board:
         board = Board(height=20, width=40)
 
-    board.run()
+    curses.wrapper(board.run)
 
 
 if __name__ == "__main__":

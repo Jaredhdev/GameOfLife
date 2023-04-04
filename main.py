@@ -14,7 +14,7 @@ def print_usage():
     print("  -f, --file \t File to load.")
 
 
-def main(argv):
+def main(stdscr, argv):
     try:
         opts, args = getopt.getopt(argv, "hf:", ["file="])
     except getopt.GetoptError:
@@ -28,13 +28,13 @@ def main(argv):
             print_usage()
             sys.exit()
         elif opt in ("-f", "--file"):
-            board = Board(file_name=arg)
+            board = Board(stdscr, file_name=arg)
 
     if not board:
-        board = Board(height=20, width=40)
+        board = Board(stdscr)
 
-    curses.wrapper(board.run)
+    board.run()
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    curses.wrapper(main, sys.argv[1:])

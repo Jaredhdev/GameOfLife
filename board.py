@@ -6,12 +6,13 @@ import curses
 
 
 class Board:
-    def __init__(self, height=10, width=10, file_name=None):
+    def __init__(self, stdscr, file_name=None):
+        self.stdscr = stdscr
         self.file_name = file_name
         if file_name is None:
-            self.height = height
-            self.width = width
-            self.board = np.zeros((height, width))
+            self.height, self.width = stdscr.getmaxyx()
+            self.height, self.width = self.height - 10, self.width - 10
+            self.board = np.zeros((self.height, self.width))
             self.soup()
         else:
             self.board = self.load_board_state(file_name)
@@ -37,6 +38,7 @@ class Board:
                     stdscr.addstr(" ")
             stdscr.addstr("|\n")
         stdscr.addstr("-" * (self.width + 2))
+        stdscr.addstr("\nPress \"q\" to quit.")
         stdscr.refresh()
 
 
@@ -77,13 +79,13 @@ class Board:
             lines = [list(map(int, line.strip())) for line in file]
         return np.array(lines)
 
-    def run(self, stdscr):
-        stdscr.timeout(100)
+    def run(self):
+        self.stdscr.timeout(100)
         while True:
-            self.render(stdscr)
+            self.render(self.stdscr)
             self.next_step()
 
-            key = stdscr.getch()
+            key = self.stdscr.getch()
             if key == ord('q'):
                 break
 
